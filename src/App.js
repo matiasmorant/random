@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
-import styled, {css} from 'styled-components'
+import React, { Component } from "react";
+import styled from "styled-components";
 
-import CarnivorousPlant from './assets/images/CarnivorousPlant.jpg'
-import GreenWetPlant    from './assets/images/GreenWetPlant.jpg'
-import RedStarPlant     from './assets/images/RedStarPlant.jpg'
+import CarnivorousPlant from "./assets/images/CarnivorousPlant.jpg";
+import GreenWetPlant from "./assets/images/GreenWetPlant.jpg";
+import RedStarPlant from "./assets/images/RedStarPlant.jpg";
 
-import Chooser from './Chooser.js'
+import Chooser from "./Chooser.js";
 
 const AppContainer = styled.div`
   display: flex;
@@ -13,7 +13,7 @@ const AppContainer = styled.div`
   align-items: center;
   height: 100vh;
   background: #193100;
-`
+`;
 
 class App extends Component {
   render() {
@@ -21,8 +21,12 @@ class App extends Component {
       <AppContainer>
         <Chooser
           title="GALLERY"
-          images      ={[ CarnivorousPlant  ,  GreenWetPlant   ,  RedStarPlant   ]}
-          descriptions={["CARNIVOROUS PLANT", "GREEN WET PLANT", "RED STAR PLANT"]}
+          images={[CarnivorousPlant, GreenWetPlant, RedStarPlant]}
+          descriptions={[
+            "CARNIVOROUS PLANT",
+            "GREEN WET PLANT",
+            "RED STAR PLANT"
+          ]}
         />
       </AppContainer>
     );
