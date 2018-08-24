@@ -140,12 +140,12 @@ class Carousel extends Component{
         <PositionIndicator length={this.props.images.length} current={this.props.selectedOption}/>
         {(this.props.selectedOption!=0)                    &&
           <SwipeBtn left  onClick={(e)=>this.props.onChange(this.props.selectedOption-1)}>
-            <i class="fa fa-chevron-left" aria-hidden="true"></i>
+            <i className="fa fa-chevron-left" aria-hidden="true"></i>
           </SwipeBtn>
         }
         {(this.props.selectedOption!=this.props.images.length-1) &&
           <SwipeBtn right onClick={(e)=>this.props.onChange(this.props.selectedOption+1)}>
-            <i class="fa fa-chevron-right" aria-hidden="true"></i>
+            <i className="fa fa-chevron-right" aria-hidden="true"></i>
           </SwipeBtn>
         }
       </CarouselDiv>
