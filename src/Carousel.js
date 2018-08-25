@@ -1,6 +1,15 @@
 import React, { Component } from "react";
 import styled, { css } from "styled-components";
 
+function widthLessThan(width) {
+  return (...args) =>
+    css`
+      @media screen and (max-width: ${width}px) {
+        ${css(...args)};
+      }
+    `;
+}
+
 function smoothSet({ comp, propName, initial, final, duration }) {
   let start = null;
   initial = initial == null ? comp[propName] : initial;
@@ -16,26 +25,36 @@ function smoothSet({ comp, propName, initial, final, duration }) {
 const Position = styled.div`
   display: flex;
   flex-direction: row;
-  width: 544px;
   background: #333a;
   justify-content: center;
   align-items: center;
+  width: 544px;
+  ${widthLessThan(670)`
+    width: calc(544 * 100vw / 670);
+  `};
 `;
 const Indicator = styled.div`
   font-size: 9px;
   margin: 0px 3px;
-  height: 20px;
-  line-height: 20px;
   text-align: center;
   color: ${props => (props.highlighted ? "#ffff" : "#fff8")};
+  height: 20px;
+  line-height: 20px;
+  ${widthLessThan(670)`
+    height: calc(20 * 100vw / 670);
+    line-height: calc(20 * 100vw / 670);
+  `};
 `;
 const PositionIndicatorContainer = styled.div`
   display: flex;
   justify-content: center;
-  height: 30px;
   width: 100%;
   position: absolute;
   bottom: 0;
+  height: 30px;
+  ${widthLessThan(670)`
+    height: calc(30 * 100vw / 670);
+  `};
 `;
 class PositionIndicator extends Component {
   render() {
@@ -55,8 +74,11 @@ class PositionIndicator extends Component {
 }
 
 const CarouselDiv = styled.div`
-  height: 250px;
   position: relative;
+  height: 250px;
+  ${widthLessThan(670)`
+    height: calc(250 * 100vw / 670);
+  `};
 `;
 const InnerCarousel = styled.div`
   display: flex;
@@ -67,19 +89,31 @@ const InnerCarouselContent = styled.div`
   display: flex;
   height: 100%;
   width: auto;
-  padding: 0px 50px;
+  padding-left: 50px;
+  padding-right: 50px;
+  ${widthLessThan(670)`
+    padding-left: calc(50 * 100vw / 670);
+    padding-right: calc(50 * 100vw / 670);
+  `};
 `;
 const Img = styled.img`
-  margin: 0px 5px;
+  margin-left: 5px;
+  margin-right: 5px;
+  width: 544px;
+  ${widthLessThan(670)`
+    margin-left: calc(5 * 100vw / 670);
+    margin-right: calc(5 * 100vw / 670);
+    width: calc(544 * 100vw / 670);
+  `};
 `;
 const SwipeBtn = styled.button`
   height: 100%;
-  width: 40px;
   position: absolute;
   background: #333a;
   border: 0px;
   color: #fff;
   top: 0;
+  outline: none;
   ${props =>
     props.right
       ? css`
@@ -88,40 +122,47 @@ const SwipeBtn = styled.button`
       : css`
           left: 0;
         `};
+  width: 40px;
+  ${widthLessThan(670)`
+    width: calc(40 * 100vw / 670);
+  `};
 `;
 class Carousel extends Component {
   constructor(props) {
     super(props);
     this.pressed = false;
     this.last_move_coord = 0;
-    this.picWidth = 544 + 10;
+    const scale = window.matchMedia("(max-width: 700px)").matches
+      ? document.documentElement.clientWidth / 670
+      : 1;
+    this.picWidth = (544 + 10) * scale;
+    this.margin = 50 * scale;
   }
-  handleMouseDown = mouseDownEvent => {
+  handlePointerDown = x => {
     this.pressed = true;
-    this.last_move_coord = mouseDownEvent.clientX;
+    this.last_move_coord = x;
   };
-  handleMouseMove = mouseMoveEvent => {
+  handlePointerMove = x => {
     if (this.pressed)
       this.innerCarousel["scrollLeft"] =
-        this.innerCarousel.scrollLeft +
-        this.last_move_coord -
-        mouseMoveEvent.clientX;
-    this.last_move_coord = mouseMoveEvent.clientX;
+        this.innerCarousel.scrollLeft + this.last_move_coord - x;
+    this.last_move_coord = x;
   };
-  handleMouseUp = () => {
+  handlePointerUp = () => {
     this.pressed = false;
     const newPic = Math.round(
-      (this.innerCarousel.scrollLeft - 50) / this.picWidth
+      (this.innerCarousel.scrollLeft - this.margin) / this.picWidth
     );
     this.props.onChange(newPic);
   };
-  handleMouseLeave = () => {
+  handlePointerLeave = () => {
     this.pressed = false;
     const newPic = Math.round(
-      (this.innerCarousel.scrollLeft - 50) / this.picWidth
+      (this.innerCarousel.scrollLeft - this.margin) / this.picWidth
     );
     this.props.onChange(newPic);
   };
+
   scrollToSelection = () => {
     smoothSet({
       comp: this.innerCarousel,
@@ -143,10 +184,13 @@ class Carousel extends Component {
           innerRef={e => {
             this.innerCarousel = e;
           }}
-          onMouseDown={mouseDownEvent => this.handleMouseDown(mouseDownEvent)}
-          onMouseMove={mouseMoveEvent => this.handleMouseMove(mouseMoveEvent)}
-          onMouseUp={() => this.handleMouseUp()}
-          onMouseLeave={() => this.handleMouseLeave()}
+          onMouseDown={e => this.handlePointerDown(e.clientX)}
+          onMouseMove={e => this.handlePointerMove(e.clientX)}
+          onMouseUp={() => this.handlePointerUp()}
+          onMouseLeave={() => this.handlePointerLeave()}
+          onTouchStart={e => this.handlePointerDown(e.touches[0].clientX)}
+          onTouchMove={e => this.handlePointerMove(e.touches[0].clientX)}
+          onTouchEnd={() => this.handlePointerUp()}
         >
           <InnerCarouselContent>
             {this.props.images.map((name, i) => (
